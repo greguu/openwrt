@@ -1,0 +1,29 @@
+diff --git a/arch/arm/mach-ixp4xx/Kconfig b/arch/arm/mach-ixp4xx/Kconfig
+index e6b23c3ce50c..0fac12cb31a6 100644
+--- a/arch/arm/mach-ixp4xx/Kconfig
++++ b/arch/arm/mach-ixp4xx/Kconfig
+@@ -17,13 +17,6 @@ config MACH_IXP4XX_OF
+ 	help
+ 	  Say 'Y' here to support Device Tree-based IXP4xx platforms.
+ 
+-config MACH_GORAMO_MLR
+-	bool "GORAMO Multi Link Router"
+-	depends on IXP4XX_PCI_LEGACY
+-	help
+-	  Say 'Y' here if you want your kernel to support GORAMO
+-	  MultiLink router.
+-
+ config ARCH_PRPMC1100
+ 	bool "PrPMC1100"
+ 	help
+diff --git a/arch/arm/mach-ixp4xx/Makefile b/arch/arm/mach-ixp4xx/Makefile
+index 0a92f8c40e1c..83719704a626 100644
+--- a/arch/arm/mach-ixp4xx/Makefile
++++ b/arch/arm/mach-ixp4xx/Makefile
+@@ -11,6 +11,4 @@ obj-pci-$(CONFIG_MACH_IXP4XX_OF)	+= ixp4xx-of.o
+ 
+ obj-y	+= common.o
+ 
+-obj-$(CONFIG_MACH_GORAMO_MLR)	+= goramo_mlr.o
+-
+ obj-$(CONFIG_PCI)		+= $(obj-pci-$(CONFIG_PCI)) common-pci.o

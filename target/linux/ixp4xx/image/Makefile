@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: GOPPL-2.0-only
 #
 # Copyright (C) 2006-2021 OpenWrt.org
 
@@ -48,5 +48,16 @@ define Device/cambria
 	IMAGE/factory.bin := append-kernel | append-rootfs | pad-rootfs
 endef
 TARGET_DEVICES += cambria
+
+define Device/watchguard
+	DEVICE_VENDOR := Watchguard
+	DEVICE_MODEL := XTM21-W
+	DEVICE_DTS := intel-ixp43x-watchguard-xtm21w
+	KERNEL := kernel-bin | append-dtb
+	IMAGES := factory.bin
+	IMAGE/factory.bin := append-kernel | append-rootfs | pad-rootfs
+endef
+TARGET_DEVICES += watchguard
+
 
 $(eval $(call BuildImage))

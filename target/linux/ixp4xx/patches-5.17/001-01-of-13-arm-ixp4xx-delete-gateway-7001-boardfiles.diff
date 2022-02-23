@@ -1,0 +1,35 @@
+diff --git a/arch/arm/mach-ixp4xx/Kconfig b/arch/arm/mach-ixp4xx/Kconfig
+index 4c787b4be62b..e6b23c3ce50c 100644
+--- a/arch/arm/mach-ixp4xx/Kconfig
++++ b/arch/arm/mach-ixp4xx/Kconfig
+@@ -17,14 +17,6 @@ config MACH_IXP4XX_OF
+ 	help
+ 	  Say 'Y' here to support Device Tree-based IXP4xx platforms.
+ 
+-config MACH_GATEWAY7001
+-	bool "Gateway 7001"
+-	depends on IXP4XX_PCI_LEGACY
+-	help
+-	  Say 'Y' here if you want your kernel to support Gateway's
+-	  7001 Access Point. For more information on this platform,
+-	  see http://openwrt.org
+-
+ config MACH_GORAMO_MLR
+ 	bool "GORAMO Multi Link Router"
+ 	depends on IXP4XX_PCI_LEGACY
+diff --git a/arch/arm/mach-ixp4xx/Makefile b/arch/arm/mach-ixp4xx/Makefile
+index b241094c9649..0a92f8c40e1c 100644
+--- a/arch/arm/mach-ixp4xx/Makefile
++++ b/arch/arm/mach-ixp4xx/Makefile
+@@ -9,11 +9,8 @@ obj-pci-n	:=
+ # Device tree platform
+ obj-pci-$(CONFIG_MACH_IXP4XX_OF)	+= ixp4xx-of.o
+ 
+-obj-pci-$(CONFIG_MACH_GATEWAY7001)	+= gateway7001-pci.o
+-
+ obj-y	+= common.o
+ 
+-obj-$(CONFIG_MACH_GATEWAY7001)	+= gateway7001-setup.o
+ obj-$(CONFIG_MACH_GORAMO_MLR)	+= goramo_mlr.o
+ 
+ obj-$(CONFIG_PCI)		+= $(obj-pci-$(CONFIG_PCI)) common-pci.o

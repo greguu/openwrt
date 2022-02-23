@@ -1,0 +1,60 @@
+diff --git a/arch/arm/mach-ixp4xx/common.c b/arch/arm/mach-ixp4xx/common.c
+index 5192cf621f5b..4e51514ace6d 100644
+--- a/arch/arm/mach-ixp4xx/common.c
++++ b/arch/arm/mach-ixp4xx/common.c
+@@ -43,27 +43,6 @@
+ 
+ #include "irqs.h"
+ 
+-u32 ixp4xx_read_feature_bits(void)
+-{
+-	u32 val = ~__raw_readl(IXP4XX_EXP_CFG2);
+-
+-	if (cpu_is_ixp42x_rev_a0())
+-		return IXP42X_FEATURE_MASK & ~(IXP4XX_FEATURE_RCOMP |
+-					       IXP4XX_FEATURE_AES);
+-	if (cpu_is_ixp42x())
+-		return val & IXP42X_FEATURE_MASK;
+-	if (cpu_is_ixp43x())
+-		return val & IXP43X_FEATURE_MASK;
+-	return val & IXP46X_FEATURE_MASK;
+-}
+-EXPORT_SYMBOL(ixp4xx_read_feature_bits);
+-
+-void ixp4xx_write_feature_bits(u32 value)
+-{
+-	__raw_writel(~value, IXP4XX_EXP_CFG2);
+-}
+-EXPORT_SYMBOL(ixp4xx_write_feature_bits);
+-
+ #define IXP4XX_TIMER_FREQ 66666000
+ 
+ /*************************************************************************
+diff --git a/include/linux/soc/ixp4xx/cpu.h b/include/linux/soc/ixp4xx/cpu.h
+index 48c2e241ac83..f526ac33afea 100644
+--- a/include/linux/soc/ixp4xx/cpu.h
++++ b/include/linux/soc/ixp4xx/cpu.h
+@@ -90,9 +90,6 @@
+ 			 IXP43X_PROCESSOR_ID_VALUE)
+ #define cpu_is_ixp46x()	((read_cpuid_id() & IXP46X_PROCESSOR_ID_MASK) == \
+ 			 IXP46X_PROCESSOR_ID_VALUE)
+-
+-u32 ixp4xx_read_feature_bits(void);
+-void ixp4xx_write_feature_bits(u32 value);
+ static inline u32 cpu_ixp4xx_features(struct regmap *rmap)
+ {
+ 	u32 val;
+@@ -114,13 +111,6 @@ static inline u32 cpu_ixp4xx_features(struct regmap *rmap)
+ #define cpu_is_ixp42x()			0
+ #define cpu_is_ixp43x()			0
+ #define cpu_is_ixp46x()			0
+-static inline u32 ixp4xx_read_feature_bits(void)
+-{
+-	return 0;
+-}
+-static inline void ixp4xx_write_feature_bits(u32 value)
+-{
+-}
+ static inline u32 cpu_ixp4xx_features(struct regmap *rmap)
+ {
+ 	return 0;

@@ -1,0 +1,50 @@
+diff --git a/arch/arm/mach-ixp4xx/Makefile b/arch/arm/mach-ixp4xx/Makefile
+index 4ebe35227bf6..3d1c9d854c7f 100644
+--- a/arch/arm/mach-ixp4xx/Makefile
++++ b/arch/arm/mach-ixp4xx/Makefile
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0
+-obj-y	+= ixp4xx-of.o common.o
++obj-y	+= ixp4xx-of.o
+diff --git a/arch/arm/mach-ixp4xx/include/mach/uncompress.h b/arch/arm/mach-ixp4xx/include/mach/uncompress.h
+index 9e08b270cfc7..09e7663e6a55 100644
+--- a/arch/arm/mach-ixp4xx/include/mach/uncompress.h
++++ b/arch/arm/mach-ixp4xx/include/mach/uncompress.h
+@@ -9,10 +9,12 @@
+ #ifndef _ARCH_UNCOMPRESS_H_
+ #define _ARCH_UNCOMPRESS_H_
+ 
+-#include "ixp4xx-regs.h"
+ #include <asm/mach-types.h>
+ #include <linux/serial_reg.h>
+ 
++#define IXP4XX_UART1_BASE_PHYS 0xc8000000
++#define IXP4XX_UART2_BASE_PHYS 0xc8001000
++
+ #define TX_DONE (UART_LSR_TEMT|UART_LSR_THRE)
+ 
+ volatile u32* uart_base;
+diff --git a/drivers/crypto/ixp4xx_crypto.c b/drivers/crypto/ixp4xx_crypto.c
+index 98730aab287c..d39a386b31ac 100644
+--- a/drivers/crypto/ixp4xx_crypto.c
++++ b/drivers/crypto/ixp4xx_crypto.c
+@@ -33,7 +33,6 @@
+ 
+ /* Intermittent includes, delete this after v5.14-rc1 */
+ #include <linux/soc/ixp4xx/cpu.h>
+-#include <mach/ixp4xx-regs.h>
+ 
+ #define MAX_KEYLEN 32
+ 
+diff --git a/drivers/net/ethernet/xscale/ptp_ixp46x.c b/drivers/net/ethernet/xscale/ptp_ixp46x.c
+index 39234852e01b..1f382777aa5a 100644
+--- a/drivers/net/ethernet/xscale/ptp_ixp46x.c
++++ b/drivers/net/ethernet/xscale/ptp_ixp46x.c
+@@ -16,7 +16,6 @@
+ #include <linux/ptp_clock_kernel.h>
+ #include <linux/platform_device.h>
+ #include <linux/soc/ixp4xx/cpu.h>
+-#include <mach/ixp4xx-regs.h>
+ 
+ #include "ixp46x_ts.h"
+ 

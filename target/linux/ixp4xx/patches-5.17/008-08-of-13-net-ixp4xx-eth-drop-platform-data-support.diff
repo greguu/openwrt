@@ -1,0 +1,158 @@
+diff --git a/drivers/net/ethernet/xscale/Kconfig b/drivers/net/ethernet/xscale/Kconfig
+index 0e878fa6e322..b33f64c54b0e 100644
+--- a/drivers/net/ethernet/xscale/Kconfig
++++ b/drivers/net/ethernet/xscale/Kconfig
+@@ -20,9 +20,9 @@ if NET_VENDOR_XSCALE
+ 
+ config IXP4XX_ETH
+ 	tristate "Intel IXP4xx Ethernet support"
+-	depends on ARM && ARCH_IXP4XX && IXP4XX_NPE && IXP4XX_QMGR
++	depends on ARM && ARCH_IXP4XX && IXP4XX_NPE && IXP4XX_QMGR && OF
+ 	select PHYLIB
+-	select OF_MDIO if OF
++	select OF_MDIO
+ 	select NET_PTP_CLASSIFY
+ 	help
+ 	  Say Y here if you want to use built-in Ethernet ports
+diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+index df77a22d1b81..577a24b3ad70 100644
+--- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
++++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+@@ -30,7 +30,6 @@
+ #include <linux/of.h>
+ #include <linux/of_mdio.h>
+ #include <linux/phy.h>
+-#include <linux/platform_data/eth_ixp4xx.h>
+ #include <linux/platform_device.h>
+ #include <linux/ptp_classify.h>
+ #include <linux/slab.h>
+@@ -38,6 +37,11 @@
+ #include <linux/soc/ixp4xx/npe.h>
+ #include <linux/soc/ixp4xx/qmgr.h>
+ #include <linux/soc/ixp4xx/cpu.h>
++#include <linux/types.h>
++
++#define IXP4XX_ETH_NPEA		0x00
++#define IXP4XX_ETH_NPEB		0x10
++#define IXP4XX_ETH_NPEC		0x20
+ 
+ #include "ixp46x_ts.h"
+ 
+@@ -147,6 +151,16 @@ typedef void buffer_t;
+ #define free_buffer_irq kfree
+ #endif
+ 
++/* Information about built-in Ethernet MAC interfaces */
++struct eth_plat_info {
++	u8 phy;		/* MII PHY ID, 0 - 31 */
++	u8 rxq;		/* configurable, currently 0 - 31 only */
++	u8 txreadyq;
++	u8 hwaddr[6];
++	u8 npe;		/* NPE instance used by this interface */
++	bool has_mdio;	/* If this instance has an MDIO bus */
++};
++
+ struct eth_regs {
+ 	u32 tx_control[2], __res1[2];		/* 000 */
+ 	u32 rx_control[2], __res2[2];		/* 010 */
+@@ -1366,7 +1380,6 @@ static const struct net_device_ops ixp4xx_netdev_ops = {
+ 	.ndo_validate_addr = eth_validate_addr,
+ };
+ 
+-#ifdef CONFIG_OF
+ static struct eth_plat_info *ixp4xx_of_get_platdata(struct device *dev)
+ {
+ 	struct device_node *np = dev->of_node;
+@@ -1417,12 +1430,6 @@ static struct eth_plat_info *ixp4xx_of_get_platdata(struct device *dev)
+ 
+ 	return plat;
+ }
+-#else
+-static struct eth_plat_info *ixp4xx_of_get_platdata(struct device *dev)
+-{
+-	return NULL;
+-}
+-#endif
+ 
+ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ {
+@@ -1434,49 +1441,9 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ 	struct port *port;
+ 	int err;
+ 
+-	if (np) {
+-		plat = ixp4xx_of_get_platdata(dev);
+-		if (!plat)
+-			return -ENODEV;
+-	} else {
+-		plat = dev_get_platdata(dev);
+-		if (!plat)
+-			return -ENODEV;
+-		plat->npe = pdev->id;
+-		switch (plat->npe) {
+-		case IXP4XX_ETH_NPEA:
+-			/* If the MDIO bus is not up yet, defer probe */
+-			break;
+-		case IXP4XX_ETH_NPEB:
+-			/* On all except IXP43x, NPE-B is used for the MDIO bus.
+-			 * If there is no NPE-B in the feature set, bail out,
+-			 * else we have the MDIO bus here.
+-			 */
+-			if (!cpu_is_ixp43x()) {
+-				if (!(ixp4xx_read_feature_bits() &
+-				      IXP4XX_FEATURE_NPEB_ETH0))
+-					return -ENODEV;
+-				/* Else register the MDIO bus on NPE-B */
+-				plat->has_mdio = true;
+-			}
+-			break;
+-		case IXP4XX_ETH_NPEC:
+-			/* IXP43x lacks NPE-B and uses NPE-C for the MDIO bus
+-			 * access, if there is no NPE-C, no bus, nothing works,
+-			 * so bail out.
+-			 */
+-			if (cpu_is_ixp43x()) {
+-				if (!(ixp4xx_read_feature_bits() &
+-				      IXP4XX_FEATURE_NPEC_ETH))
+-					return -ENODEV;
+-				/* Else register the MDIO bus on NPE-B */
+-				plat->has_mdio = true;
+-			}
+-			break;
+-		default:
+-			return -ENODEV;
+-		}
+-	}
++	plat = ixp4xx_of_get_platdata(dev);
++	if (!plat)
++		return -ENODEV;
+ 
+ 	if (!(ndev = devm_alloc_etherdev(dev, sizeof(struct port))))
+ 		return -ENOMEM;
+diff --git a/include/linux/platform_data/eth_ixp4xx.h b/include/linux/platform_data/eth_ixp4xx.h
+deleted file mode 100644
+index 114b0940729f..000000000000
+--- a/include/linux/platform_data/eth_ixp4xx.h
++++ /dev/null
+@@ -1,21 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __PLATFORM_DATA_ETH_IXP4XX
+-#define __PLATFORM_DATA_ETH_IXP4XX
+-
+-#include <linux/types.h>
+-
+-#define IXP4XX_ETH_NPEA		0x00
+-#define IXP4XX_ETH_NPEB		0x10
+-#define IXP4XX_ETH_NPEC		0x20
+-
+-/* Information about built-in Ethernet MAC interfaces */
+-struct eth_plat_info {
+-	u8 phy;		/* MII PHY ID, 0 - 31 */
+-	u8 rxq;		/* configurable, currently 0 - 31 only */
+-	u8 txreadyq;
+-	u8 hwaddr[6];
+-	u8 npe;		/* NPE instance used by this interface */
+-	bool has_mdio;	/* If this instance has an MDIO bus */
+-};
+-
+-#endif
