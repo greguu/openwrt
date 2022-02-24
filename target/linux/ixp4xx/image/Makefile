@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GOPPL-2.0-only
+# SPDX-License-Identifier: GPL-2.0-only
 #
 # Copyright (C) 2006-2021 OpenWrt.org
 
