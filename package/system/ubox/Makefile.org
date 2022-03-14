@@ -25,12 +25,12 @@ define Package/ubox
   CATEGORY:=Base system
   DEPENDS:=+libubox +ubusd +ubus +libubus +libuci +USE_GLIBC:librt
   TITLE:=OpenWrt system helper toolbox
-#  ALTERNATIVES:=\
-#    100:/sbin/rmmod:/sbin/kmodloader \
-#    100:/sbin/insmod:/sbin/kmodloader \
-#    100:/sbin/lsmod:/sbin/kmodloader \
-#    100:/sbin/modinfo:/sbin/kmodloader \
-#    100:/sbin/modprobe:/sbin/kmodloader
+  ALTERNATIVES:=\
+    100:/sbin/rmmod:/sbin/kmodloader \
+    100:/sbin/insmod:/sbin/kmodloader \
+    100:/sbin/lsmod:/sbin/kmodloader \
+    100:/sbin/modinfo:/sbin/kmodloader \
+    100:/sbin/modprobe:/sbin/kmodloader
 endef
 
 define Package/getrandom
