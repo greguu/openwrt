@@ -10,7 +10,7 @@ BOARDNAME:=Intel XScale IXP4xx
 FEATURES:=squashfs
 CPU_TYPE:=xscale
 
-KERNEL_PATCHVER:=5.17
+KERNEL_PATCHVER:=5.18
 
 define Target/Description
 	Build firmware images for the IXP4xx XScale CPU

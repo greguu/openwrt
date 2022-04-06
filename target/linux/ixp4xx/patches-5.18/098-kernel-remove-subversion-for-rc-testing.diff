@@ -1,0 +1,11 @@
+--- a/Makefile.org		2022-03-07 11:28:31.000000000 +1300
++++ b/Makefile			2022-03-10 13:54:56.403201019 +1300
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ VERSION = 5
+ PATCHLEVEL = 18
+-SUBLEVEL = 0
++#SUBLEVEL = 0
+ EXTRAVERSION = -rc1
+ NAME = Superb Owl
+ 
