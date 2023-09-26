@@ -1,6 +1,6 @@
---- a/arch/arm/boot/dts/intel-ixp43x-watchguard-xtm21w.dts  1970-01-01 12:00:00.000000000 +1200
-+++ b/arch/arm/boot/dts/intel-ixp43x-watchguard-xtm21w.dts  2023-09-26 18:27:52.690694722 +1300
-@@ -0,0 +1,63 @@
+--- a/arch/arm/boot/dts/intel-ixp43x-watchguard-xtm21w.dts	1970-01-01 12:00:00.000000000 +1200
++++ b/arch/arm/boot/dts/intel-ixp43x-watchguard-xtm21w.dts	2023-09-26 21:05:29.188772929 +1300
+@@ -0,0 +1,74 @@
 +// SPDX-License-Identifier: ISC
 +/*
 + * Device Tree file for the Watchguard XTM21-W
@@ -57,10 +57,21 @@
 +
 +                                partitions {
 +                                        compatible = "redboot-fis";
-+                                        /* Eraseblock at 0x0fe0000 */
++                                        /*
++                                         * The stock Watchguard Redboot flash layout is staticly defined.
++                                         * Running 'fis init' will setup 3 partitions with different erasebock sizes.
++                                         * 0x000000000000-0x000000080000 : "RedBoot"
++                                         * 0x0000000f0000-0x0000000ff000 : "FIS directory"
++                                         * 0x0000000ff000-0x000000100000 : "RedBoot config"
++                                         *
++                                         * dev:  size   erasesize  name
++                                         * mtd0: 00080000 00010000 "RedBoot"
++                                         * mtd1: 0000f000 00008000 "FIS directory"
++                                         * mtd2: 00001000 00004000 "RedBoot config"
++                                         */
 +                                        fis-index-block = <0xf>;
 +                                };
 +                        };
-+               };
-+       };
++		};
++	};
 +};
