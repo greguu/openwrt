@@ -1,6 +1,6 @@
---- a/arch/arm/boot/dts/intel-ixp43x-watchguard-xtm21w.dts	1970-01-01 12:00:00.000000000 +1200
-+++ b/arch/arm/boot/dts/intel-ixp43x-watchguard-xtm21w.dts	2022-02-18 17:15:13.152063944 +1300
-@@ -0,0 +1,46 @@
+--- a/arch/arm/boot/dts/intel-ixp43x-watchguard-xtm21w.dts  1970-01-01 12:00:00.000000000 +1200
++++ b/arch/arm/boot/dts/intel-ixp43x-watchguard-xtm21w.dts  2023-09-26 18:27:52.690694722 +1300
+@@ -0,0 +1,63 @@
 +// SPDX-License-Identifier: ISC
 +/*
 + * Device Tree file for the Watchguard XTM21-W
@@ -45,6 +45,22 @@
 +                        compatible = "intel,ixp43x-expansion-bus-controller", "syscon";
 +                        /* Uses at least up to 0x230 */
 +                        reg = <0xc4000000 0x1000>;
-+                };
-+            };
++
++                        /* 16 MB NOR FLASH */
++                        flash@0,0 {
++                                compatible = "intel,ixp4xx-flash", "cfi-flash";
++                                bank-width = <2>;
++                                /* Enable writes on the expansion bus */
++                                intel,ixp4xx-eb-write-enable = <1>;
++                                /* 16 MB of Flash mapped in at CS0 */
++                                reg = <0 0x00000000 0x1000000>;
++
++                                partitions {
++                                        compatible = "redboot-fis";
++                                        /* Eraseblock at 0x0fe0000 */
++                                        fis-index-block = <0xf>;
++                                };
++                        };
++               };
++       };
 +};
