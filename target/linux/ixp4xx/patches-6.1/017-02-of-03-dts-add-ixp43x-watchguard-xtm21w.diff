@@ -1,6 +1,6 @@
 --- a/arch/arm/boot/dts/intel-ixp43x-watchguard-xtm21w.dts	1970-01-01 12:00:00.000000000 +1200
-+++ b/arch/arm/boot/dts/intel-ixp43x-watchguard-xtm21w.dts	2023-09-26 21:05:29.188772929 +1300
-@@ -0,0 +1,74 @@
++++ b/arch/arm/boot/dts/intel-ixp43x-watchguard-xtm21w.dts	2023-10-10 18:49:14.912883281 +1300
+@@ -0,0 +1,139 @@
 +// SPDX-License-Identifier: ISC
 +/*
 + * Device Tree file for the Watchguard XTM21-W
@@ -10,7 +10,6 @@
 +/dts-v1/;
 +
 +#include "intel-ixp43x.dtsi"
-+#include "intel-ixp4xx-reference-design.dtsi"
 +#include <dt-bindings/input/input.h>
 +
 +/ {
@@ -35,6 +34,23 @@
 +        aliases {
 +                serial0 = &uart0;
 +        };
++
++		i2c {
++			compatible = "i2c-gpio";
++			/*
++			 * Watchguard vendor kernel used IRQ 5 for SDA and IRQ 4 for SCL
++			 */
++			sda-gpios = <&gpio0 5 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
++			scl-gpios = <&gpio0 4 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			/* RTC: Seiko Instruments S-35390A */
++			s35390a@30 {
++				compatible = "sii,s35390a";
++				reg = <0x30>;
++			};
++		};
 +
 +        soc {
 +                interrupt-controller@c8003000 {
@@ -72,6 +88,55 @@
 +                                        fis-index-block = <0xf>;
 +                                };
 +                        };
-+		};
-+	};
++						gpio-nand@1,0 {
++							/*
++							TODO
++							*/
++							compatible = "gpio-control-nand";
++							reg = <1 0x0000 0x2>;
++							#address-cells = <1>;
++							#size-cells = <1>;
++						};
++                };
++
++               	pci@c0000000 {
++					status = "ok";
++					/*
++					* Watchguard kernel did apply the PCI prefetch workaround (eg hammering errata)
++					* PCI: IXP43x Richland silicon detected - PCI Non-Prefetch Workaround Enabled
++					* Hence we set it to ixp42x-pci compatible to enforce this, despite being ixp43x
++					* FIXME: This workaround may not be required
++					*/
++					compatible = "intel,ixp42x-pci";
++					/*
++			 		* Taken from IXDP425 PCI boardfile.
++			 		* PCI slots on the BIXMB425BD base card.
++			 		* We have up to 4 slots (IDSEL) with 4 swizzled IRQs.
++			 		*/
++					#interrupt-cells = <1>;
++					interrupt-map-mask = <0xf800 0 0 7>;
++					interrupt-map =
++					/* IDSEL 1 */
++					<0x0800 0 0 1 &gpio0 11 IRQ_TYPE_LEVEL_LOW>, /* INT A on slot 1 is irq 11 */
++					<0x0800 0 0 2 &gpio0 10 IRQ_TYPE_LEVEL_LOW>, /* INT B on slot 1 is irq 10 */
++					<0x0800 0 0 3 &gpio0 9  IRQ_TYPE_LEVEL_LOW>, /* INT C on slot 1 is irq 9 */
++					<0x0800 0 0 4 &gpio0 8  IRQ_TYPE_LEVEL_LOW>, /* INT D on slot 1 is irq 8 */
++					/* IDSEL 2 */
++					<0x1000 0 0 1 &gpio0 10 IRQ_TYPE_LEVEL_LOW>, /* INT A on slot 2 is irq 10 */
++					<0x1000 0 0 2 &gpio0 9  IRQ_TYPE_LEVEL_LOW>, /* INT B on slot 2 is irq 9 */
++					<0x1000 0 0 3 &gpio0 8  IRQ_TYPE_LEVEL_LOW>, /* INT C on slot 2 is irq 8 */
++					<0x1000 0 0 4 &gpio0 11 IRQ_TYPE_LEVEL_LOW>, /* INT D on slot 2 is irq 11 */
++					/* IDSEL 3 */
++					<0x1800 0 0 1 &gpio0 9  IRQ_TYPE_LEVEL_LOW>, /* INT A on slot 3 is irq 9 */
++					<0x1800 0 0 2 &gpio0 8  IRQ_TYPE_LEVEL_LOW>, /* INT B on slot 3 is irq 8 */
++					<0x1800 0 0 3 &gpio0 11 IRQ_TYPE_LEVEL_LOW>, /* INT C on slot 3 is irq 11 */
++					<0x1800 0 0 4 &gpio0 10 IRQ_TYPE_LEVEL_LOW>, /* INT D on slot 3 is irq 10 */
++					/* IDSEL 4 */
++					<0x2000 0 0 1 &gpio0 8  IRQ_TYPE_LEVEL_LOW>, /* INT A on slot 4 is irq 8 */
++					<0x2000 0 0 2 &gpio0 11 IRQ_TYPE_LEVEL_LOW>, /* INT B on slot 4 is irq 11 */
++					<0x2000 0 0 3 &gpio0 10 IRQ_TYPE_LEVEL_LOW>, /* INT C on slot 4 is irq 10 */
++					<0x2000 0 0 4 &gpio0 9  IRQ_TYPE_LEVEL_LOW>; /* INT D on slot 4 is irq 9 */
++				};
++
++       };
 +};
