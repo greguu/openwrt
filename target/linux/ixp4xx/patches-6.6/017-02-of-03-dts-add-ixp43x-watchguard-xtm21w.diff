@@ -1,0 +1,420 @@
+diff --no-dereference -Naur a/arch/arm/boot/dts/intel/ixp/intel-ixp43x-watchguard-xtm21w.dts b/arch/arm/boot/dts/intel/ixp/intel-ixp43x-watchguard-xtm21w.dts
+--- a/arch/arm/boot/dts/intel/ixp/intel-ixp43x-watchguard-xtm21w.dts	1970-01-01 12:00:00.000000000 +1200
++++ b/arch/arm/boot/dts/intel/ixp/intel-ixp43x-watchguard-xtm21w.dts	2024-10-25 20:23:57.667781040 +1300
+@@ -0,0 +1,416 @@
++/dts-v1/;
++
++/ {
++	model = "Watchguard XTM21W";
++	compatible = "watchguard,xtm21w\0intel,ixp43x";
++	#address-cells = <0x01>;
++	#size-cells = <0x01>;
++
++	soc {
++		#address-cells = <0x01>;
++		#size-cells = <0x01>;
++		ranges;
++		compatible = "simple-bus";
++		interrupt-parent = <0x01>;
++
++		bus@c4000000 {
++			native-endian;
++			#address-cells = <0x02>;
++			#size-cells = <0x01>;
++			ranges = <0x00 0x00 0x50000000 0x1000000 0x01 0x00 0x51000000 0x1000000 0x02 0x00 0x52000000 0x1000000 0x03 0x00 0x53000000 0x1000000 0x04 0x00 0x54000000 0x1000000 0x05 0x00 0x55000000 0x1000000 0x06 0x00 0x56000000 0x1000000 0x07 0x00 0x57000000 0x1000000>;
++			dma-ranges = <0x00 0x00 0x50000000 0x1000000 0x01 0x00 0x51000000 0x1000000 0x02 0x00 0x52000000 0x1000000 0x03 0x00 0x53000000 0x1000000 0x04 0x00 0x54000000 0x1000000 0x05 0x00 0x55000000 0x1000000 0x06 0x00 0x56000000 0x1000000 0x07 0x00 0x57000000 0x1000000>;
++			compatible = "intel,ixp43x-expansion-bus-controller\0syscon";
++			reg = <0xc4000000 0x1000>;
++
++			flash@0,0 {
++				compatible = "intel,ixp4xx-flash\0cfi-flash";
++				bank-width = <0x02>;
++				intel,ixp4xx-eb-write-enable = <0x01>;
++				reg = <0x00 0x00 0x1000000>;
++
++				partitions {
++					compatible = "fixed-partitions";
++					#address-cells = <0x01>;
++					#size-cells = <0x01>;
++
++					partition@0 {
++						label = "Redboot";
++						reg = <0x00 0x80000>;
++						read-only;
++					};
++
++					partition@80000 {
++						label = "cfg0";
++						reg = <0x80000 0x20000>;
++						read-only;
++					};
++
++					partition@a0000 {
++						label = "cfg1";
++						reg = <0xa0000 0x10000>;
++						read-only;
++					};
++
++					partition@b0000 {
++						label = "mfg";
++						reg = <0xb0000 0x10000>;
++						read-only;
++					};
++
++					partition@c0000 {
++						label = "bootOpt";
++						reg = <0xc0000 0x10000>;
++						read-only;
++					};
++
++					partition@d0000 {
++						label = "Unused";
++						reg = <0xd0000 0x10000>;
++						read-only;
++					};
++
++					partition@e0000 {
++						label = "RedbootConfig";
++						reg = <0xe0000 0x20000>;
++						read-only;
++					};
++				};
++			};
++
++			gpio-nand@1,0 {
++				status = "ok";
++				compatible = "gpio-control-nand";
++				intel,ixp4xx-eb-t1 = <0x00>;
++				intel,ixp4xx-eb-t2 = <0x00>;
++				intel,ixp4xx-eb-t3 = <0x01>;
++				intel,ixp4xx-eb-t4 = <0x00>;
++				intel,ixp4xx-eb-t5 = <0x00>;
++				intel,ixp4xx-eb-cycle-type = <0x00>;
++				intel,ixp4xx-eb-byte-access-on-halfword = <0x00>;
++				intel,ixp4xx-eb-mux-address-and-data = <0x00>;
++				intel,ixp4xx-eb-ahb-split-transfers = <0x00>;
++				intel,ixp4xx-eb-write-enable = <0x01>;
++				intel,ixp4xx-eb-byte-access = <0x01>;
++				reg = <0x01 0x00 0x200>;
++				nand-ecc-mode = "soft";
++				nand-ecc-step-size = <0x200>;
++				nand-ecc-strength = <0x04>;
++				#address-cells = <0x01>;
++				#size-cells = <0x01>;
++				rdy-gpios = <0x02 0x07 0x00>;
++				nce-gpios = <0x02 0x0a 0x01>;
++				ale-gpios = <0x02 0x09 0x00>;
++				cle-gpios = <0x02 0x08 0x00>;
++				nwp-gpios = <0x00>;
++				label = "ixp400 NAND";
++
++				partitions {
++					compatible = "fixed-partitions";
++					#address-cells = <0x01>;
++					#size-cells = <0x01>;
++
++					fs@0 {
++						label = "SysA 2meg";
++						reg = <0x00 0x200000>;
++					};
++
++					fs@400000 {
++						label = "backup 4 meg";
++						reg = <0x400000 0x400000>;
++					};
++
++					fs@e400000 {
++						label = "SysB 4 meg";
++						reg = <0xe400000 0x400000>;
++					};
++				};
++			};
++		};
++
++		queue-manager@60000000 {
++			compatible = "intel,ixp4xx-ahb-queue-manager";
++			reg = <0x60000000 0x4000>;
++			interrupts = <0x03 0x04 0x04 0x04>;
++			phandle = <0x04>;
++		};
++
++		pci@c0000000 {
++			reg = <0xc0000000 0x1000>;
++			interrupts = <0x08 0x04 0x09 0x04 0x0a 0x04>;
++			#address-cells = <0x03>;
++			#size-cells = <0x02>;
++			device_type = "pci";
++			bus-range = <0x00 0xff>;
++			status = "ok";
++			ranges = <0x2000000 0x00 0x48000000 0x48000000 0x00 0x4000000 0x1000000 0x00 0x00 0x4c000000 0x00 0x10000>;
++			dma-ranges = <0x2000000 0x00 0x00 0x00 0x00 0x4000000>;
++			compatible = "intel,ixp42x-pci";
++			#interrupt-cells = <0x01>;
++			interrupt-map-mask = <0xf800 0x00 0x00 0x07>;
++			interrupt-map = <0x1000 0x00 0x00 0x01 0x02 0x00 0x08>;
++		};
++
++		serial@c8000000 {
++			compatible = "intel,xscale-uart";
++			reg = <0xc8000000 0x1000>;
++			reg-offset = <0x03>;
++			reg-shift = <0x02>;
++			interrupts = <0x0f 0x04>;
++			clock-frequency = <0xe10000>;
++			no-loopback-test;
++		};
++
++		serial@c8001000 {
++			compatible = "intel,xscale-uart";
++			reg = <0xc8001000 0x1000>;
++			reg-offset = <0x03>;
++			reg-shift = <0x02>;
++			interrupts = <0x0d 0x04>;
++			clock-frequency = <0xe10000>;
++			no-loopback-test;
++		};
++
++		gpio@c8004000 {
++			compatible = "intel,ixp4xx-gpio";
++			reg = <0xc8004000 0x1000>;
++			gpio-controller;
++			#gpio-cells = <0x02>;
++			interrupt-controller;
++			#interrupt-cells = <0x02>;
++			phandle = <0x02>;
++		};
++
++		interrupt-controller@c8003000 {
++			reg = <0xc8003000 0x100>;
++			interrupt-controller;
++			#interrupt-cells = <0x02>;
++			compatible = "intel,ixp43x-interrupt";
++			phandle = <0x01>;
++		};
++
++		timer@c8005000 {
++			compatible = "intel,ixp4xx-timer";
++			reg = <0xc8005000 0x100>;
++			interrupts = <0x05 0x04>;
++		};
++
++		npe@c8006000 {
++			compatible = "intel,ixp4xx-network-processing-engine";
++			reg = <0xc8006000 0x1000 0xc8007000 0x1000 0xc8008000 0x1000>;
++			#address-cells = <0x01>;
++			#size-cells = <0x00>;
++			phandle = <0x03>;
++
++			hss@0 {
++				compatible = "intel,ixp4xx-hss";
++				reg = <0x00>;
++				intel,npe-handle = <0x03 0x00>;
++				status = "disabled";
++			};
++
++			hss@1 {
++				compatible = "intel,ixp4xx-hss";
++				reg = <0x01>;
++				intel,npe-handle = <0x03 0x00>;
++				status = "disabled";
++			};
++
++			crypto {
++				compatible = "intel,ixp4xx-crypto";
++				intel,npe-handle = <0x03 0x02>;
++				queue-rx = <0x04 0x1e>;
++				queue-txready = <0x04 0x1d>;
++			};
++		};
++
++		ethernet@c8009000 {
++			compatible = "intel,ixp4xx-ethernet";
++			reg = <0xc8009000 0x1000>;
++			status = "ok";
++			queue-rx = <0x04 0x03>;
++			queue-txready = <0x04 0x14>;
++			intel,npe-handle = <0x03 0x01>;
++			phy-mode = "rgmii";
++
++			fixed-link {
++				speed = <0x64>;
++				full-duplex;
++			};
++		};
++
++		ethernet@c800a000 {
++			compatible = "intel,ixp4xx-ethernet";
++			reg = <0xc800a000 0x1000>;
++			status = "ok";
++			queue-rx = <0x04 0x04>;
++			queue-txready = <0x04 0x15>;
++			intel,npe-handle = <0x03 0x02>;
++			phy-mode = "rgmii";
++			phandle = <0x08>;
++
++			fixed-link {
++				speed = <0x64>;
++				full-duplex;
++			};
++
++			mdio {
++				#address-cells = <0x01>;
++				#size-cells = <0x00>;
++
++				switch@16 {
++					compatible = "marvell,mv88e6060";
++					reg = <0x10>;
++
++					ports {
++						#address-cells = <0x01>;
++						#size-cells = <0x00>;
++
++						port@0 {
++							reg = <0x00>;
++							label = "lan1";
++						};
++
++						port@1 {
++							reg = <0x01>;
++							label = "lan2";
++						};
++
++						port@2 {
++							reg = <0x02>;
++							label = "lan3";
++						};
++
++						port@5 {
++							reg = <0x05>;
++							phy-mode = "rgmii-id";
++							ethernet = <0x08>;
++							label = "cpu";
++
++							fixed-link {
++								speed = <0x64>;
++								full-duplex;
++							};
++						};
++					};
++				};
++			};
++		};
++
++		ethernet@c800c000 {
++			compatible = "intel,ixp4xx-ethernet";
++			reg = <0xc800c000 0x1000>;
++			status = "ok";
++			intel,npe = <0x00>;
++			queue-rx = <0x04 0x02>;
++			queue-txready = <0x04 0x13>;
++			phy-mode = "rgmii";
++			intel,npe-handle = <0x03 0x00>;
++			phandle = <0x09>;
++
++			fixed-link {
++				speed = <0x64>;
++				full-duplex;
++			};
++
++
++			mdio1 {
++				#address-cells = <0x01>;
++				#size-cells = <0x00>;
++
++				switch@29 {
++					compatible = "realtek,rtl8365mb";
++					reg = <0x1d>;
++
++					ports {
++						#address-cells = <0x01>;
++						#size-cells = <0x00>;
++
++						port@0 {
++							reg = <0x00>;
++							label = "lan4";
++						};
++
++						port@1 {
++							reg = <0x01>;
++							label = "lan3";
++						};
++
++						port@2 {
++							reg = <0x02>;
++							label = "lan2";
++						};
++
++						port@3 {
++							reg = <0x03>;
++							label = "lan1";
++						};
++
++						port@4 {
++							reg = <0x04>;
++							label = "wan";
++						};
++
++						port@7 {
++							reg = <0x07>;
++							phy-mode = "rgmii";
++							tx-internal-delay-ps = <0x7d0>;
++							rx-internal-delay-ps = <0x00>;
++							label = "cpu";
++							ethernet = <0x09>;
++
++							fixed-link {
++								speed = <0x3e8>;
++								full-duplex;
++							};
++						};
++					};
++				};
++			};
++		};
++
++		usb@cd000000 {
++			compatible = "intel,ixp43x-ehci\0generic-ehci";
++			reg = <0xcd000000 0x300>;
++			interrupts = <0x20 0x04>;
++			has-transaction-translator;
++			big-endian;
++			status = "ok";
++		};
++
++		usb@ce000000 {
++			compatible = "intel,ixp43x-ehci\0generic-ehci";
++			reg = <0xce000000 0x300>;
++			interrupts = <0x21 0x04>;
++			has-transaction-translator;
++			big-endian;
++			status = "ok";
++		};
++	};
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x00 0x10000000>;
++	};
++
++	chosen {
++		bootargs = "console=ttyS0,115200n8 root=/dev/sda1 rw rootwait";
++		stdout-path = "uart0:115200n8";
++	};
++
++	aliases {
++		serial0 = "/soc/serial@c8000000";
++	};
++
++	i2c {
++		compatible = "i2c-gpio";
++		sda-gpios = <0x02 0x05 0x06>;
++		scl-gpios = <0x02 0x04 0x06>;
++		#address-cells = <0x01>;
++		#size-cells = <0x00>;
++
++		s35390a@30 {
++			compatible = "sii,s35390a";
++			reg = <0x30>;
++		};
++	};
++};

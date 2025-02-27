@@ -1,0 +1,9 @@
+--- a/arch/arm/boot/dts/intel/ixp/Makefile	2022-02-14 09:13:30.000000000 +1300
++++ b/arch/arm/boot/dts/intel/ixp/Makefile	2022-02-19 14:55:05.334709503 +1300
+@@ -17,4 +17,5 @@
+ 	intel-ixp42x-netgear-wg302v1.dtb \
+ 	intel-ixp42x-arcom-vulcan.dtb \
+ 	intel-ixp42x-gateway-7001.dtb \
+-	intel-ixp42x-usrobotics-usr8200.dtb
++	intel-ixp42x-usrobotics-usr8200.dtb \
++	intel-ixp43x-watchguard-xtm21w.dtb
